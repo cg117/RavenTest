@@ -15,10 +15,11 @@ public class Main {
     	
     	game = new RavenGame();
     	ui = new RavenUI(game);
-    	
+    	GameCanvas.getInstance().setNewSize(game.getMap().getSizeX(), game.getMap().getSizeY());
     	gameLoop();
 	}
     
+    public static RavenUI getUI(){return ui;};
 	//////////////////////////////////////////////////////////////////////////
 	// Game simulation
 
@@ -30,17 +31,23 @@ public class Main {
     	
     	while (true) {
     		// TODO Resize UI if the map changes!
+    		
     		long currentTime = System.nanoTime();
 
     		game.update((currentTime - lastTime) * 1.0e-9);
     		
     		// Always dispose the canvas
-    		try {
-    			GameCanvas.startDrawing(game.getMap().getSizeX(), game.getMap().getSizeY());
-    			game.render();
-    		} finally {
-    			GameCanvas.stopDrawing();
-    		}
+    		//if(game.getMap() != null){
+    		//if(!game.isPaused()) {
+    			try {
+    				//GameCanvas.startDrawing(game.getMap().getSizeX(), game.getMap().getSizeY());
+    				GameCanvas.startDrawing();
+    				game.render();
+    			} finally {
+    				GameCanvas.stopDrawing();
+    			}
+    		//}
+    		//}
     		
     		long millisToNextUpdate = Math.max(0, (1000 / 60) - ((System.nanoTime() - currentTime) / 1000000));
 			lastTime = currentTime;

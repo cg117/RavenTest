@@ -32,6 +32,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import raven.edit.editor.EditorViewController;
 import raven.game.RavenGame;
 import raven.game.RavenObject;
 import raven.game.RavenUserOptions;
@@ -98,11 +99,10 @@ public class RavenUI extends JFrame implements KeyListener, MouseListener, Compo
     	// All done. Show it!
     	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	this.pack();
-    	this.setResizable(false);
+    	this.setResizable(true);
     	this.setTitle("Raven - " + game.getMap().getName());
     	this.setVisible(true);
 	}
-	
 	private void createMenu() {
 		JMenu menu, subMenu;
 		JMenuItem menuItem;
@@ -121,9 +121,15 @@ public class RavenUI extends JFrame implements KeyListener, MouseListener, Compo
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.META_MASK));
 		menuItem.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
-				String filename = chooseMapFile();
-				if (filename != null)
-					game.switchToMap(filename);
+				final String filename = chooseMapFile();
+				if (filename != null) {
+					javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			            public void run() {
+			            	game.switchToMap(filename);
+			            }
+			        });
+					
+				}
 			}
 		});
 		menu.add(menuItem);
@@ -137,7 +143,7 @@ public class RavenUI extends JFrame implements KeyListener, MouseListener, Compo
 		});
 		menu.add(menuItem);
 		// Remove bot
-		menuItem = new JMenuItem("Load map");
+		menuItem = new JMenuItem("Remove bot");
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0));
 		menuItem.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
@@ -155,6 +161,16 @@ public class RavenUI extends JFrame implements KeyListener, MouseListener, Compo
 			}
 		});
 		menu.add(checkedMenuItem);
+		
+		//Exit
+		menuItem = new JMenuItem("Exit");
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
+		menuItem.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		menu.add(menuItem);
 		
 		// Navigation
 		menu = new JMenu("Navigation");

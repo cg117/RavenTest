@@ -31,6 +31,7 @@ public abstract class BaseGameEntity {
 	
 	protected BaseGameEntity(int id) {
 		setID(id);
+		EntityManager.registerEntity(this);
 	}
 
 	public void update(double delta) {}

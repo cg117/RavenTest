@@ -2,6 +2,7 @@ package raven.game;
 
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +11,8 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.JPanel;
+
 
 import raven.game.armory.Bolt;
 import raven.game.armory.Pellet;
@@ -28,6 +31,7 @@ import raven.ui.GameCanvas;
 import raven.ui.RavenUI;
 import raven.utils.Log;
 import raven.utils.MapSerializer;
+import raven.Main;
 
 public class RavenGame {
 	/** the current game map */
@@ -115,7 +119,9 @@ public class RavenGame {
 		EntityManager.reset();
 		
 		try {
-			loadMap(RavenScript.getString("StartMap"));
+			String mapName = RavenScript.getString("StartMap");
+			loadMap(mapName);
+			getMap().setName(mapName);
 		} catch (IOException e) {
 			System.err.println("Failed to load default map: " + RavenScript.getString("StartMap") + ". Reason: \n" + e.getLocalizedMessage());
 			System.exit(1);
@@ -214,8 +220,20 @@ public class RavenGame {
 		if (newMapPath != null) {
 			try {
 				loadMap(newMapPath);
+				int width = getMap().getSizeX();
+				int height = getMap().getSizeY();
+				GameCanvas.getInstance().setNewSize(width, height);
+				Main.getUI().setTitle(getMap().getName());
+				//Main.getUI().validate();
+				((JPanel)Main.getUI().getContentPane()).setPreferredSize(new Dimension(width, height));
+				//Main.getUI().getContentPane().setSize(width, height);
+				Main.getUI().pack();
+				
 			} catch (IOException e) {
-				Log.warn("game", "Failed to laod map " + newMapPath + ".");
+				Log.warn("game", "Failed to load map " + newMapPath + ".");
+			}
+			finally{
+				newMapPath = null;
 			}
 		}
 		
@@ -325,7 +343,7 @@ public class RavenGame {
 		pathManager = new PathManager(
 				RavenScript.getInt("MaxSearchCyclesPerUpdateStep"));
 		map = MapSerializer.deserializeMapFromPath(fileName);
-		
+		map.setName(fileName);
 		EntityManager.reset();
 		addBots(RavenScript.getInt("NumBots"));
 		
@@ -671,5 +689,5 @@ public class RavenGame {
 				bot.tag();
 		}//next entity
 	}
-
+	public boolean isPaused(){return paused;}
 }

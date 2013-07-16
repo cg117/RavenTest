@@ -51,12 +51,18 @@ public class GameCanvas extends Canvas {
 	public static void startDrawing(int width, int height) {
 		getInstance().create(width, height);
 	}
-	
+	public static void startDrawing() {
+		getInstance().create();
+	}
+	public void setNewSize(int width, int height){this.width = width; this.height = height;setSize(width, height);}
+	protected void create(){this.create(this.width, this.height);};
 	protected void create(int width, int height) {
     	// Don't redraw on requests
     	setIgnoreRepaint(true);
     	
 		// Ask for input
+    	//this.width = width;
+    	//this.height = height;
 		setFocusable(true);
 		requestFocus();
 		if (getBufferStrategy() == null) {
